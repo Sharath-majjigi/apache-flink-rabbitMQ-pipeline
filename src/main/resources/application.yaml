@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+#TODO: credentials should be kept in secret-manager
+spring:
+  application:
+    name: iudx-eventstream-assignment
+  datasource:
+    username: sharathmajjigi
+    password: sharathmajjigi
+    url: jdbc:postgresql://localhost:5432/eventdb
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+
+#hostname is localhost if I run locally
+rabbitmq-props:
+  host: localhost
+  port: 5672
+  username: guest
+  password: guest
+  virtual-host: /
+  queue-name: event_queue
+

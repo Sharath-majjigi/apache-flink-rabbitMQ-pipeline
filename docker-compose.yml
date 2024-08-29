@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST: /
+    networks:
+      - backend
+
+  postgres:
+    image: postgres:13-alpine
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: sharathmajjigi
+      POSTGRES_PASSWORD: sharathmajjigi
+      POSTGRES_DB: eventdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  flink-jobmanager:
+    image: apache/flink:1.20
+    container_name: flink-jobmanager
+    ports:
+      - "8081:8081"
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+    command: jobmanager
+    networks:
+      - backend
+
+  flink-taskmanager:
+    image: apache/flink:1.20
+    container_name: flink-taskmanager
+    depends_on:
+      - flink-jobmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+    command: taskmanager
+    networks:
+      - backend
+
+  app:
+    build: .
+    container_name: spring-boot-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - rabbitmq
+      - postgres
+      - flink-jobmanager
+      - flink-taskmanager
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/eventdb
+      SPRING_DATASOURCE_USERNAME: sharathmajjigi
+      SPRING_DATASOURCE_PASSWORD: sharathmajjigi
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  pgdata:
