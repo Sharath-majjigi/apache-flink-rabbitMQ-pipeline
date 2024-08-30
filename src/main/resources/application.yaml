@@ -20,7 +20,7 @@ spring:
 
 #hostname is localhost if I run locally
 rabbitmq-props:
-  host: localhost
+  host: rabbitmq
   port: 5672
   username: guest
   password: guest

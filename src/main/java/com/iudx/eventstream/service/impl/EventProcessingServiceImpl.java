@@ -33,7 +33,7 @@ public class EventProcessingServiceImpl implements EventProcessingService {
     PostgresqlDatasourceProperties postgresqlDatasourceProperties;
 
     @Override
-    public void processEvents() throws Exception {
+    public void processEvents(){
 
         try{
             final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -101,7 +101,6 @@ public class EventProcessingServiceImpl implements EventProcessingService {
 
         }catch (Exception e){
             log.error("Error occurred while executing the pipeline: {}", e.getMessage());
-            throw e;
         }
 
     }

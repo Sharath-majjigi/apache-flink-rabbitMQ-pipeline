@@ -13,4 +13,4 @@ COPY --from=build /app/build/libs/*.jar /app/application.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/app/application.jar"]
+ENTRYPOINT ["java", "--add-opens", "java.base/java.lang=ALL-UNNAMED", "-jar", "/app/application.jar"]

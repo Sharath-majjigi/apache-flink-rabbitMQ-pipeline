@@ -28,25 +28,15 @@ services:
     networks:
       - backend
 
-  flink-jobmanager:
-    image: apache/flink:1.20
-    container_name: flink-jobmanager
+  flink:
+    image: apache/flink:1.17.0
+    container_name: flink
     ports:
       - "8081:8081"
     environment:
-      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
-    command: jobmanager
-    networks:
-      - backend
-
-  flink-taskmanager:
-    image: apache/flink:1.20
-    container_name: flink-taskmanager
-    depends_on:
-      - flink-jobmanager
-    environment:
-      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
-    command: taskmanager
+      - JOB_MANAGER_RPC_ADDRESS=flink
+    command: >
+      bash -c "start-jobmanager.sh & start-taskmanager.sh"
     networks:
       - backend
 
@@ -58,8 +48,7 @@ services:
     depends_on:
       - rabbitmq
       - postgres
-      - flink-jobmanager
-      - flink-taskmanager
+      - flink
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/eventdb
       SPRING_DATASOURCE_USERNAME: sharathmajjigi
@@ -69,6 +58,8 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASSWORD: guest
+      JAVA_OPTS: "--add-opens java.base/java.lang=ALL-UNNAMED"
+
     networks:
       - backend
 
